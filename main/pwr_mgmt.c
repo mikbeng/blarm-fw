@@ -80,10 +80,10 @@ void pwr_init(void)
 
     // Check if we woke up from deep sleep
     esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
-    if (wakeup_cause == ESP_SLEEP_WAKEUP_GPIO) {  // Changed from EXT1 to GPIO
+    if (wakeup_cause == ESP_SLEEP_WAKEUP_GPIO) { 
         sleep_state.wake_count++;
         // Get and store which pins triggered the wakeup
-        sleep_state.last_wakeup_pins = esp_sleep_get_gpio_wakeup_status();  // Changed from ext1
+        sleep_state.last_wakeup_pins = esp_sleep_get_gpio_wakeup_status();
         
         ESP_LOGI(TAG, "Woke up from deep sleep!");
         ESP_LOGI(TAG, "Wake count: %ld", sleep_state.wake_count);

@@ -22,9 +22,9 @@ void gpio_init(void)
 
 void app_main(void)
 {
-
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    printf("app_main\n");
     pwr_init(); //Make sure to call this first as it checks if we woke up from deep sleep
-
 
     gpio_init();
     buzzer_init();
@@ -38,7 +38,8 @@ void app_main(void)
         //Read the switch input
         if (switch_input_is_pressed()) {
             printf("Switch is pressed\n");
-            pwr_enter_deep_sleep(0);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            pwr_enter_deep_sleep(0xAC);
             //buzzer_on();
         }
         else {
