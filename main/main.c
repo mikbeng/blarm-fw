@@ -32,20 +32,27 @@ void app_main(void)
     int level = 0;
 
     while (1) {
-        gpio_set_level(led_pin, level);
+        //gpio_set_level(led_pin, level);
         level = !level;
 
-        //Read the switch input
-        if (switch_input_is_pressed()) {
-            printf("Switch is pressed\n");
-            vTaskDelay(pdMS_TO_TICKS(3000));
-            pwr_enter_deep_sleep(0xAC);
-            //buzzer_on();
+        // //Read the switch input
+        // if (switch_input_is_pressed()) {
+        //     printf("Switch is pressed\n");
+        //     //vTaskDelay(pdMS_TO_TICKS(3000));
+        //     //pwr_enter_deep_sleep(0xAC);
+        //     buzzer_on();
+        // }
+        // else {
+        //     buzzer_off();
+        // }
+
+        if(level == 1) {
+            buzzer_on();
         }
         else {
-            //buzzer_off();
+            buzzer_off();
         }
 
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
 }
