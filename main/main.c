@@ -5,10 +5,10 @@
 #include "buzzer.h"
 #include "pwr_mgmt.h"
 #include "switch_input.h"
+#include "main.h"
 
-#define led_pin 8
 
-void gpio_init(void)
+void led_init(void)
 {
     gpio_config_t output_config = {
         .pin_bit_mask = (1ULL << led_pin),
@@ -22,37 +22,38 @@ void gpio_init(void)
 
 void app_main(void)
 {
-    vTaskDelay(pdMS_TO_TICKS(5000));
+    vTaskDelay(pdMS_TO_TICKS(3000));
     printf("app_main\n");
     pwr_init(); //Make sure to call this first as it checks if we woke up from deep sleep
 
-    gpio_init();
+    led_init();
     buzzer_init();
     
     int level = 0;
 
+    switch_input_init();
+    
+    switch_event_t event;
+    
     while (1) {
-        //gpio_set_level(led_pin, level);
+        // Wait for switch events
+        if (switch_input_get_event(&event, 50)) {
+            switch (event) {
+                case SWITCH_EVENT_PRESSED:
+                    printf("Switch is pressed!\n");
+                    printf("Entering deep sleep in 5 seconds\n");
+                    vTaskDelay(pdMS_TO_TICKS(5000));
+                    pwr_enter_deep_sleep(0xAC);
+                    break;
+                case SWITCH_EVENT_RELEASED:
+                    printf("Switch is released!\n");
+                    break;
+            }
+        }
+
+        gpio_set_level(led_pin, level);
         level = !level;
 
-        // //Read the switch input
-        // if (switch_input_is_pressed()) {
-        //     printf("Switch is pressed\n");
-        //     //vTaskDelay(pdMS_TO_TICKS(3000));
-        //     //pwr_enter_deep_sleep(0xAC);
-        //     buzzer_on();
-        // }
-        // else {
-        //     buzzer_off();
-        // }
-
-        if(level == 1) {
-            buzzer_on();
-        }
-        else {
-            buzzer_off();
-        }
-
-        vTaskDelay(3000 / portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }

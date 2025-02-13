@@ -13,6 +13,7 @@
 #include "esp_log.h"
 #include "driver/rtc_cntl.h"
 #include "driver/uart.h"
+#include "main.h"
 
 /******************************************************************************
  * Private Definitions and Types
@@ -110,6 +111,16 @@ void pwr_enter_deep_sleep(uint32_t state_to_save)
     // Disable WiFi before deep sleep
     //esp_wifi_stop();
     
+    //Re-init the led output pin as input to reduce power consumption
+    gpio_config_t input_config = {
+        .pin_bit_mask = (1ULL << led_pin),
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+    gpio_config(&input_config);
+
     // Configure GPIO wakeup
     _configure_wakeup_source();
     

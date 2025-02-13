@@ -11,6 +11,21 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+
+// Define callback function type
+typedef void (*switch_callback_t)(void);
+
+typedef enum {
+    SWITCH_RISING_EDGE,
+    SWITCH_FALLING_EDGE
+} switch_edge_t;
+
+typedef enum {
+    SWITCH_EVENT_PRESSED,
+    SWITCH_EVENT_RELEASED
+} switch_event_t;
 
 /******************************************************************************
  * Public Definitions and Types
@@ -30,10 +45,7 @@
  */
 void switch_input_init(void);
 
-/**
- * @brief Get the debounced state of the switch
- * @return true if switch is pressed, false otherwise
- */
-bool switch_input_is_pressed(void);
+
+bool switch_input_get_event(switch_event_t* event, TickType_t timeout);
 
 #endif /* SWITCH_INPUT_H */
