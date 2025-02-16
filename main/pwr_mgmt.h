@@ -16,6 +16,8 @@
  * Public Definitions and Types
  ******************************************************************************/
 #define pwr_off_pin 2
+#define bat_mon__on_pin 10
+#define bat_mon_pin 4
 
 /******************************************************************************
  * Public Constants

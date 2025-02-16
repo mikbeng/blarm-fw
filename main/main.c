@@ -5,6 +5,7 @@
 #include "buzzer.h"
 #include "pwr_mgmt.h"
 #include "switch_input.h"
+#include "accel.h"
 #include "main.h"
 
 
@@ -22,12 +23,18 @@ void led_init(void)
 
 void app_main(void)
 {
-    vTaskDelay(pdMS_TO_TICKS(3000));
+    vTaskDelay(pdMS_TO_TICKS(5000));
     printf("app_main\n");
     pwr_init(); //Make sure to call this first as it checks if we woke up from deep sleep
 
+    //accel_init();
+
     led_init();
-    buzzer_init();
+
+    //Flash the LED fast for 5 seconds
+
+    pwr_enter_deep_sleep(0xAC);
+    //buzzer_init();
     
     int level = 0;
 
@@ -42,7 +49,13 @@ void app_main(void)
                 case SWITCH_EVENT_PRESSED:
                     printf("Switch is pressed!\n");
                     printf("Entering deep sleep in 5 seconds\n");
-                    vTaskDelay(pdMS_TO_TICKS(5000));
+                    //Flash the LED fast for 5 seconds
+                    for (int i = 0; i < 10; i++) {
+                        gpio_set_level(led_pin, 1);
+                        vTaskDelay(pdMS_TO_TICKS(250));
+                        gpio_set_level(led_pin, 0);
+                        vTaskDelay(pdMS_TO_TICKS(250));
+                    }
                     pwr_enter_deep_sleep(0xAC);
                     break;
                 case SWITCH_EVENT_RELEASED:
@@ -54,6 +67,6 @@ void app_main(void)
         gpio_set_level(led_pin, level);
         level = !level;
 
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }

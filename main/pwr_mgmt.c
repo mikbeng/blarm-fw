@@ -14,6 +14,8 @@
 #include "driver/rtc_cntl.h"
 #include "driver/uart.h"
 #include "main.h"
+#include "driver/adc.h"
+#include "soc/periph_defs.h"
 
 /******************************************************************************
  * Private Definitions and Types
@@ -75,9 +77,19 @@ void pwr_init(void)
         .intr_type = GPIO_INTR_DISABLE
     };
     gpio_config(&output_config);
-
     //set pwr_off_pin to low
     gpio_set_level(pwr_off_pin, 0);
+
+    gpio_config_t input_config = {
+        .pin_bit_mask = (1ULL << bat_mon_pin),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_ENABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+    gpio_config(&input_config);
+    //set bat_mon_pin to low
+    gpio_set_level(bat_mon_pin, 0);
 
     // Check if we woke up from deep sleep
     esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
@@ -108,19 +120,41 @@ void pwr_init(void)
 
 void pwr_enter_deep_sleep(uint32_t state_to_save)
 {
-    // Disable WiFi before deep sleep
-    //esp_wifi_stop();
     
-    //Re-init the led output pin as input to reduce power consumption
-    gpio_config_t input_config = {
-        .pin_bit_mask = (1ULL << led_pin),
+    // Configure ALL GPIO pins as inputs without pullups/pulldowns to minimize current
+    for (int i = 2; i <= 7; i++) {  //GPIO2-7 (D0-D5)
+        gpio_config_t config = {
+            .pin_bit_mask = (1ULL << i),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE
+        };
+        gpio_config(&config);
+    }
+
+    //GPIO20 (RX_D7) and GPIO21 (TX_D6)
+    gpio_config_t config = {
+        .pin_bit_mask = (1ULL << 20) | (1ULL << 21),
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE
     };
-    gpio_config(&input_config);
+    gpio_config(&config);
 
+    //GPIO8-10 (D8-D10)
+    for (int i = 8; i <= 10; i++) {
+        gpio_config_t config = {
+            .pin_bit_mask = (1ULL << i),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE
+        };
+        gpio_config(&config);
+    }
+    
     // Configure GPIO wakeup
     _configure_wakeup_source();
     
