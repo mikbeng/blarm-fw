@@ -66,7 +66,7 @@ void switch_input_init(void)
     gpio_config_t input_config = {
         .pin_bit_mask = (1ULL << SWITCH_PIN),
         .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,    // Using external pullup
+        .pull_up_en = GPIO_PULLUP_ENABLE,    // Using internal pullup
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_ANYEDGE        // Interrupt on both edges
     };

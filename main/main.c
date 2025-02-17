@@ -23,23 +23,27 @@ void led_init(void)
 
 void app_main(void)
 {
-    vTaskDelay(pdMS_TO_TICKS(5000));
+    vTaskDelay(pdMS_TO_TICKS(2000));
     printf("app_main\n");
     pwr_init(); //Make sure to call this first as it checks if we woke up from deep sleep
 
-    //accel_init();
-
+    accel_init();
     led_init();
-
-    //Flash the LED fast for 5 seconds
-
-    pwr_enter_deep_sleep(0xAC);
-    //buzzer_init();
-    
+    buzzer_init();
+    vTaskDelay(pdMS_TO_TICKS(2000));
     int level = 0;
 
     switch_input_init();
     
+    //Flash the LED fast for 5 seconds
+    for (int i = 0; i < 10; i++) {
+        gpio_set_level(led_pin, 1);
+        vTaskDelay(pdMS_TO_TICKS(250));
+        gpio_set_level(led_pin, 0);
+        vTaskDelay(pdMS_TO_TICKS(250));
+    }
+    pwr_enter_deep_sleep(0xAC);
+
     switch_event_t event;
     
     while (1) {

@@ -6,8 +6,13 @@
 
 // LIS2DH12TR Register Addresses
 #define LIS2DH12_WHO_AM_I          0x0F
+#define LIS2DH12_CTRL_REG0         0x1E
 #define LIS2DH12_CTRL_REG1         0x20
+#define LIS2DH12_CTRL_REG2         0x21
+#define LIS2DH12_CTRL_REG3         0x22
 #define LIS2DH12_CTRL_REG4         0x23
+#define LIS2DH12_CTRL_REG5         0x24
+#define LIS2DH12_CTRL_REG6         0x25
 #define LIS2DH12_OUT_X_L           0x28
 #define LIS2DH12_OUT_X_H           0x29
 #define LIS2DH12_OUT_Y_L           0x2A
