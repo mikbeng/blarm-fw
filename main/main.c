@@ -30,7 +30,7 @@ void app_main(void)
     accel_init();
     led_init();
     buzzer_init();
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(3000));
     int level = 0;
 
     switch_input_init();

@@ -33,56 +33,56 @@ esp_err_t accel_init(void) {
         return ret;
     }
 
-    // // Verify device ID
-    // uint8_t who_am_i;
-    // ret = accel_read_reg(LIS2DH12_WHO_AM_I, &who_am_i);
-    // if (ret != ESP_OK) {
-    //     ESP_LOGE(TAG, "Failed to read WHO_AM_I register");
-    //     return ret;
-    // }
+    // Verify device ID
+    uint8_t who_am_i;
+    ret = accel_read_reg(LIS2DH12_WHO_AM_I, &who_am_i);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to read WHO_AM_I register");
+        return ret;
+    }
 
-    // if (who_am_i != 0x33) { // 0x33 is the expected WHO_AM_I value for LIS2DH12
-    //     ESP_LOGE(TAG, "Unknown device ID: 0x%02x", who_am_i);
-    //     return ESP_ERR_NOT_FOUND;
-    // }
+    if (who_am_i != 0x33) { // 0x33 is the expected WHO_AM_I value for LIS2DH12
+        ESP_LOGE(TAG, "Unknown device ID: 0x%02x", who_am_i);
+        return ESP_ERR_NOT_FOUND;
+    }
 
-    // // CTRL_REG0: Disabel internal pullup on SA0 pin
-    // ret = accel_write_reg(LIS2DH12_CTRL_REG0, 0x90);
-    // if (ret != ESP_OK) {
-    //     return ret;
-    // }
+    // CTRL_REG0: Disabel internal pullup on SA0 pin
+    ret = accel_write_reg(LIS2DH12_CTRL_REG0, 0x90);
+    if (ret != ESP_OK) {
+        return ret;
+    }
 
-    // // CTRL_REG3: Enable interrupt on INT1 pin
-    // ret = accel_write_reg(LIS2DH12_CTRL_REG3, 0x40);
-    // if (ret != ESP_OK) {
-    //     return ret;
-    // }
+    // CTRL_REG3: Enable interrupt on INT1 pin
+    ret = accel_write_reg(LIS2DH12_CTRL_REG3, 0x40);
+    if (ret != ESP_OK) {
+        return ret;
+    }
 
-    // // CTRL_REG4: Full-scale = ±2g, Low-resolution mode
-    // // 0x00 = 0b00000000
-    // // HR = 0 (Low-resolution mode)
-    // // FS = 00 (±2g scale)
-    // ret = accel_write_reg(LIS2DH12_CTRL_REG4, 0x00);
-    // if (ret != ESP_OK) {
-    //     return ret;
-    // }
+    // CTRL_REG4: Full-scale = ±2g, Low-resolution mode
+    // 0x00 = 0b00000000
+    // HR = 0 (Low-resolution mode)
+    // FS = 00 (±2g scale)
+    ret = accel_write_reg(LIS2DH12_CTRL_REG4, 0x00);
+    if (ret != ESP_OK) {
+        return ret;
+    }
 
-    // //Set interrupt pins to active low (CTRL reg 6) so that they are high when not triggered
-    // ret = accel_write_reg(LIS2DH12_CTRL_REG6, 0x02);
-    // if (ret != ESP_OK) {
-    //     return ret;
-    // }
+    //Set interrupt pins to active low (CTRL reg 6) so that they are high when not triggered
+    ret = accel_write_reg(LIS2DH12_CTRL_REG6, 0x02);
+    if (ret != ESP_OK) {
+        return ret;
+    }
 
-    // // Configure the sensor
-    // // CTRL_REG1: Enable X, Y, Z axes, 1Hz data rate in low-power mode
-    // // 0x8F = 0b00011111
-    // // ODR = 0001 low power mode 1Hz
-    // // LPEN = 1 (Low-power mode enabled)
-    // // Zen = Yen = Xen = 1 (All axes enabled)
-    // ret = accel_write_reg(LIS2DH12_CTRL_REG1, 0x1F);
-    // if (ret != ESP_OK) {
-    //     return ret;
-    // }
+    // Configure the sensor
+    // CTRL_REG1: Enable X, Y, Z axes, 1Hz data rate in low-power mode
+    // 0x8F = 0b00011111
+    // ODR = 0001 low power mode 1Hz
+    // LPEN = 1 (Low-power mode enabled)
+    // Zen = Yen = Xen = 1 (All axes enabled)
+    ret = accel_write_reg(LIS2DH12_CTRL_REG1, 0x1F);
+    if (ret != ESP_OK) {
+        return ret;
+    }
 
     ESP_LOGI(TAG, "LIS2DH12 initialized successfully");
     return ESP_OK;
