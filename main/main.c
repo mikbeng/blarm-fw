@@ -30,20 +30,10 @@ void app_main(void)
     accel_init();
     led_init();
     buzzer_init();
-    vTaskDelay(pdMS_TO_TICKS(3000));
-    int level = 0;
-
     switch_input_init();
-    
-    //Flash the LED fast for 5 seconds
-    for (int i = 0; i < 10; i++) {
-        gpio_set_level(led_pin, 1);
-        vTaskDelay(pdMS_TO_TICKS(250));
-        gpio_set_level(led_pin, 0);
-        vTaskDelay(pdMS_TO_TICKS(250));
-    }
-    pwr_enter_deep_sleep(0xAC);
 
+    int level = 0;
+    
     switch_event_t event;
     
     while (1) {
