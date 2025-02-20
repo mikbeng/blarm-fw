@@ -7,6 +7,21 @@
 
 static TaskHandle_t buzzer_task_handle = NULL;
 
+void buzzer_set_frequency(uint32_t freq_hz) {
+    ledc_set_freq(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, freq_hz);
+}
+
+void buzzer_on(uint32_t duty, uint32_t freq_hz) {
+    buzzer_set_frequency(freq_hz);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+}
+
+void buzzer_off(void) {
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+}
+
 void buzzer_init(void) {
     // Configure LEDC timer
     ledc_timer_config_t ledc_timer = {
@@ -34,38 +49,32 @@ void buzzer_task(void *pvParameters) {
     float time = 0.0f;
     uint32_t duty = 0;
     
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 4096);
-    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-
     while (1) {
-        // Calculate sine wave value (-1 to 1)
-        //float sine_value = sinf(2 * pi * frequency * time);
-        // Convert to duty cycle (0 to 8192, which is 2^13)
-        //uint32_t duty = (uint32_t)((sine_value + 1.0f) * 4096.0f);
-        
-        // duty = 4096;
-        // ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty);
-        // ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-        
-        // // Increment time (50ms delay = 20 updates per second)
-        // vTaskDelay(pdMS_TO_TICKS(500));
-
-        // duty = 4096/2;
-        // ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty);
-        // ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-        // //time += 0.05f;  // 50ms in seconds
-
-        vTaskDelay(pdMS_TO_TICKS(50));
+        printf("Setting buzzer to 5200 Hz\n");
+        buzzer_on(4096, 5200);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        buzzer_off();
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        printf("Setting buzzer to 3500 Hz\n");
+        buzzer_on(4096, 3500);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        buzzer_off();
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        printf("Setting buzzer to 1800 Hz\n");
+        buzzer_on(4096, 1800);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        buzzer_off();
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
 
-void buzzer_on(void) {
+void buzzer_start(void) {
     if (buzzer_task_handle == NULL) {
         xTaskCreate(buzzer_task, "buzzer_task", 2048, NULL, 5, &buzzer_task_handle);
     }
 }
 
-void buzzer_off(void) {
+void buzzer_stop(void) {
     if (buzzer_task_handle != NULL) {
         vTaskDelete(buzzer_task_handle);
         buzzer_task_handle = NULL;

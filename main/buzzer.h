@@ -6,7 +6,7 @@
 #define buzzer_pin 20
 
 void buzzer_init(void);
-void buzzer_on(void);
-void buzzer_off(void);
+void buzzer_start(void);
+void buzzer_stop(void);
 
 #endif

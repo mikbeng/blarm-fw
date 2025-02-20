@@ -35,6 +35,8 @@ void app_main(void)
     int level = 0;
     
     switch_event_t event;
+    // printf("Starting buzzer\n");
+    // buzzer_start();
     
     while (1) {
         // Wait for switch events
