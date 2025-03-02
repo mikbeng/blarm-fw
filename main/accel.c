@@ -10,44 +10,11 @@
 
 static const char *TAG = "LIS2DH12";
 
-esp_err_t accel_init(void) {
-    // Configure I2C
-    i2c_config_t conf = {
-        .mode = I2C_MODE_MASTER,
-        .sda_io_num = I2C_MASTER_SDA_IO,
-        .scl_io_num = I2C_MASTER_SCL_IO,
-        .sda_pullup_en = GPIO_PULLUP_DISABLE,
-        .scl_pullup_en = GPIO_PULLUP_DISABLE,
-        .master.clk_speed = I2C_MASTER_FREQ_HZ
-    };
+RTC_DATA_ATTR accel_handle_t accel_handle = {0};
 
-    esp_err_t ret = i2c_param_config(I2C_MASTER_NUM, &conf);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "I2C parameter configuration failed");
-        return ret;
-    }
-
-    ret = i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "I2C driver installation failed");
-        return ret;
-    }
-
-    // Verify device ID
-    uint8_t who_am_i;
-    ret = accel_read_reg(LIS2DH12_WHO_AM_I, &who_am_i);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to read WHO_AM_I register");
-        return ret;
-    }
-
-    if (who_am_i != 0x33) { // 0x33 is the expected WHO_AM_I value for LIS2DH12
-        ESP_LOGE(TAG, "Unknown device ID: 0x%02x", who_am_i);
-        return ESP_ERR_NOT_FOUND;
-    }
-
+esp_err_t s_LIS2DH12_config(void) {
     // CTRL_REG0: Disabel internal pullup on SA0 pin
-    ret = accel_write_reg(LIS2DH12_CTRL_REG0, 0x90);
+    esp_err_t ret = accel_write_reg(LIS2DH12_CTRL_REG0, 0x90);
     if (ret != ESP_OK) {
         return ret;
     }
@@ -84,7 +51,52 @@ esp_err_t accel_init(void) {
         return ret;
     }
 
-    ESP_LOGI(TAG, "LIS2DH12 initialized successfully");
+    return ESP_OK;
+}
+
+esp_err_t accel_init(void) {
+    // Configure I2C
+    i2c_config_t conf = {
+        .mode = I2C_MODE_MASTER,
+        .sda_io_num = I2C_MASTER_SDA_IO,
+        .scl_io_num = I2C_MASTER_SCL_IO,
+        .sda_pullup_en = GPIO_PULLUP_DISABLE,
+        .scl_pullup_en = GPIO_PULLUP_DISABLE,
+        .master.clk_speed = I2C_MASTER_FREQ_HZ
+    };
+
+    esp_err_t ret = i2c_param_config(I2C_MASTER_NUM, &conf);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C parameter configuration failed");
+        return ret;
+    }
+
+    ret = i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C driver installation failed");
+        return ret;
+    }
+
+    // Verify device ID
+    uint8_t who_am_i;
+    ret = accel_read_reg(LIS2DH12_WHO_AM_I, &who_am_i);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to read WHO_AM_I register");
+        return ret;
+    }
+
+    if (who_am_i != 0x33) { // 0x33 is the expected WHO_AM_I value for LIS2DH12
+        ESP_LOGE(TAG, "Unknown device ID: 0x%02x", who_am_i);
+        return ESP_ERR_NOT_FOUND;
+    }
+
+    ret = s_LIS2DH12_config();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to configure LIS2DH12");
+        return ret;
+    }
+
+    ESP_LOGI(TAG, "Accelerometer initialized successfully");
     return ESP_OK;
 }
 

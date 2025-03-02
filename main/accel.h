@@ -1,9 +1,20 @@
+/**
+ * @file accel.h
+ * @brief 
+ *
+ * @author
+ * @date 2025-03-02
+ */
 #ifndef ACCEL_H
 #define ACCEL_H
 
 #include <stdint.h>
 #include "esp_err.h"
+#include <stdbool.h>
 
+/******************************************************************************
+ * Public Definitions and Types
+ ******************************************************************************/
 // LIS2DH12TR Register Addresses
 #define LIS2DH12_WHO_AM_I          0x0F
 #define LIS2DH12_CTRL_REG0         0x1E
@@ -19,10 +30,19 @@
 #define LIS2DH12_OUT_Y_H           0x2B
 #define LIS2DH12_OUT_Z_L           0x2C
 #define LIS2DH12_OUT_Z_H           0x2D
-
 #define LIS2DH12_I2C_ADDR          0x19
 
-// Function declarations
+typedef struct {
+    bool initialized;
+} accel_handle_t;
+
+/******************************************************************************
+ * Public Constants
+ ******************************************************************************/
+
+/******************************************************************************
+ * Public Function Declarations
+ ******************************************************************************/
 esp_err_t accel_init(void);
 esp_err_t accel_read_reg(uint8_t reg_addr, uint8_t *data);
 esp_err_t accel_write_reg(uint8_t reg_addr, uint8_t data);
